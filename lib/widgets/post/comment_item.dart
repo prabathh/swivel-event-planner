@@ -16,28 +16,32 @@ class CommentItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: fullContent ? AppColors.tertiaryColor : AppColors.backgroundColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(comment.name, style: AppTextStyles.commentName),
-            if (fullContent) ...[
-              const Space(space: 2),
-              Text(comment.email, style: AppTextStyles.input),
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: Card(
+        color:
+            fullContent ? AppColors.tertiaryColor : AppColors.backgroundColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(comment.name, style: AppTextStyles.commentName),
+              if (fullContent) ...[
+                const Space(space: 2),
+                Text(comment.email, style: AppTextStyles.input),
+              ],
+              const Space(space: 6),
+              Text(
+                comment.body,
+                maxLines: fullContent ? null : 3,
+                overflow:
+                    fullContent ? TextOverflow.visible : TextOverflow.ellipsis,
+                style: AppTextStyles.subheading,
+              ),
             ],
-            const Space(space: 6),
-            Text(
-              comment.body,
-              maxLines: fullContent ? null : 3,
-              overflow:
-                  fullContent ? TextOverflow.visible : TextOverflow.ellipsis,
-              style: AppTextStyles.subheading,
-            ),
-          ],
+          ),
         ),
       ),
     );

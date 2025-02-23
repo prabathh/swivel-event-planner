@@ -35,7 +35,7 @@ To clone and run the project locally, follow these steps:
 
 1. Clone the repository:
     ```bash
-    git clone <repository_url>
+    git clone git clone https://github.com/prabathh/swivel-event-planner.git
     ```
 
 2. Navigate to the project directory:
