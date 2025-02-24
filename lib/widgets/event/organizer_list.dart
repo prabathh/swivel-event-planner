@@ -58,13 +58,10 @@ class OrganizerList extends ConsumerWidget {
                       title: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            organizer['name']!,
-                            style: AppTextStyles.orgName,
-                          ),
+                          Text(organizer.name, style: AppTextStyles.orgName),
                           const SizedBox(height: 4),
                           Text(
-                            organizer['email']!,
+                            organizer.email,
                             style: AppTextStyles.subheading,
                           ),
                         ],

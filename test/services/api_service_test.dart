@@ -6,12 +6,17 @@ import 'package:event_planner_app/services/api_service.dart';
 import 'package:event_planner_app/models/post_modal.dart';
 import 'package:event_planner_app/models/comment_modal.dart';
 import 'api_service_test.mocks.dart';
+import 'package:event_planner_app/config/app_config.dart';
+import 'package:event_planner_app/models/organizer_model.dart';
+import 'package:event_planner_app/models/photo_model .dart';
 
 // Add this annotation to generate a mock for http.Client
 @GenerateMocks([http.Client])
 void main() {
   late ApiService apiService;
   late MockClient mockClient;
+  final String baseUrl = Config.baseUrl;
+  final String baseImageUrl = Config.baseImageUrl;
 
   setUp(() {
     // Create a mock HTTP client
@@ -35,7 +40,7 @@ void main() {
 
         // Simulate a successful HTTP response
         when(
-          mockClient.get(Uri.parse('https://picsum.photos/v2/list')),
+          mockClient.get(Uri.parse(baseImageUrl)),
         ).thenAnswer((_) async => http.Response(mockResponse, 200));
 
         // Act
@@ -55,7 +60,7 @@ void main() {
         // Arrange
         // Simulate an error HTTP response
         when(
-          mockClient.get(Uri.parse('https://picsum.photos/v2/list')),
+          mockClient.get(Uri.parse(baseImageUrl)),
         ).thenAnswer((_) async => http.Response('Not Found', 404));
 
         // Act & Assert
@@ -72,26 +77,24 @@ void main() {
         // Arrange
         final mockResponse = '''
       [
-        {"id": 1, "name": "John Doe", "email": "john@example.com"},
-        {"id": 2, "name": "Jane Smith", "email": "jane@example.com"}
+        {"id": 1, "name": "John Doe", "email": "john@example.com", "username": "JohnDoe"},
+        {"id": 2, "name": "Jane Smith", "email": "jane@example.com", "username": "JaneSmith"}
       ]
       ''';
 
         // Simulate a successful HTTP response
         when(
-          mockClient.get(
-            Uri.parse('https://jsonplaceholder.typicode.com/users'),
-          ),
+          mockClient.get(Uri.parse('$baseUrl/users')),
         ).thenAnswer((_) async => http.Response(mockResponse, 200));
 
         // Act
         final result = await apiService.fetchOrganizers();
 
         // Assert
-        expect(result, isA<List<Map<String, dynamic>>>());
+        expect(result, isA<List<Organizer>>());
         expect(result.length, 2);
-        expect(result[0]['name'], 'John Doe');
-        expect(result[1]['email'], 'jane@example.com');
+        expect(result[0].name, 'John Doe');
+        expect(result[1].email, 'jane@example.com');
       },
     );
 
@@ -101,9 +104,7 @@ void main() {
         // Arrange
         // Simulate an error HTTP response
         when(
-          mockClient.get(
-            Uri.parse('https://jsonplaceholder.typicode.com/users'),
-          ),
+          mockClient.get(Uri.parse('$baseUrl/users')),
         ).thenAnswer((_) async => http.Response('Not Found', 404));
 
         // Act & Assert
@@ -120,23 +121,23 @@ void main() {
         // Arrange
         final mockResponse = '''
       [
-        {"id": "0", "author": "John Doe", "url": "https://picsum.photos/id/0/5000/3333"},
-        {"id": "1", "author": "Jane Smith", "url": "https://picsum.photos/id/1/5000/3333"}
+        {"id": "0", "author": "John Doe", "url": "https://picsum.photos/id/0/5000/3333", "download_url": "https://picsum.photos/id/0/5000/3333"},
+        {"id": "1", "author": "Jane Smith", "url": "https://picsum.photos/id/1/5000/3333", "download_url": "https://picsum.photos/id/0/5000/3333"}
       ]
       ''';
 
         when(
-          mockClient.get(Uri.parse('https://picsum.photos/v2/list')),
+          mockClient.get(Uri.parse(baseImageUrl)),
         ).thenAnswer((_) async => http.Response(mockResponse, 200));
 
         // Act
         final result = await apiService.fetchPhotos();
 
         // Assert
-        expect(result, isA<List<Map<String, dynamic>>>());
+        expect(result, isA<List<Photo>>());
         expect(result.length, 2);
-        expect(result[0]['author'], 'John Doe');
-        expect(result[1]['url'], 'https://picsum.photos/id/1/5000/3333');
+        expect(result[0].author, 'John Doe');
+        expect(result[1].url, 'https://picsum.photos/id/1/5000/3333');
       },
     );
 
@@ -145,7 +146,7 @@ void main() {
       () async {
         // Arrange
         when(
-          mockClient.get(Uri.parse('https://picsum.photos/v2/list')),
+          mockClient.get(Uri.parse(baseImageUrl)),
         ).thenAnswer((_) async => http.Response('Not Found', 404));
 
         // Act & Assert
@@ -168,9 +169,7 @@ void main() {
       ''';
 
         when(
-          mockClient.get(
-            Uri.parse('https://jsonplaceholder.typicode.com/posts'),
-          ),
+          mockClient.get(Uri.parse('$baseUrl/posts')),
         ).thenAnswer((_) async => http.Response(mockResponse, 200));
 
         // Act
@@ -189,9 +188,7 @@ void main() {
       () async {
         // Arrange
         when(
-          mockClient.get(
-            Uri.parse('https://jsonplaceholder.typicode.com/posts'),
-          ),
+          mockClient.get(Uri.parse('$baseUrl/posts')),
         ).thenAnswer((_) async => http.Response('Not Found', 404));
 
         // Act & Assert
@@ -214,9 +211,7 @@ void main() {
       ''';
 
         when(
-          mockClient.get(
-            Uri.parse('https://jsonplaceholder.typicode.com/comments?postId=1'),
-          ),
+          mockClient.get(Uri.parse('$baseUrl/comments?postId=1')),
         ).thenAnswer((_) async => http.Response(mockResponse, 200));
 
         // Act
@@ -235,9 +230,7 @@ void main() {
       () async {
         // Arrange
         when(
-          mockClient.get(
-            Uri.parse('https://jsonplaceholder.typicode.com/comments?postId=1'),
-          ),
+          mockClient.get(Uri.parse('$baseUrl/comments?postId=1')),
         ).thenAnswer((_) async => http.Response('Not Found', 404));
 
         // Act & Assert

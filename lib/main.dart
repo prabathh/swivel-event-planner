@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'screens/login_screen.dart';
-import 'package:event_planner_app/config/firebase_config.dart';
+import 'package:event_planner_app/config/app_config.dart';
 import 'package:event_planner_app/config/colors.dart';
 
 void main() async {

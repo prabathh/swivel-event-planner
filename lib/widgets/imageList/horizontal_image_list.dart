@@ -32,7 +32,7 @@ class HorizontalImageList extends ConsumerWidget {
                     ClipRRect(
                       //  Cached Network Image
                       child: CachedNetworkImage(
-                        imageUrl: data['download_url'],
+                        imageUrl: data.downloadUrl,
                         errorWidget:
                             (context, url, error) => const Icon(Icons.error),
                         fit: BoxFit.cover,
@@ -70,7 +70,7 @@ class HorizontalImageList extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              data['author'],
+                              data.author,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyles.commentName,

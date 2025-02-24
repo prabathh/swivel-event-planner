@@ -1,17 +1,45 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:event_planner_app/models/post_modal.dart';
+import 'package:event_planner_app/models/organizer_model.dart';
+import 'package:event_planner_app/models/photo_model .dart';
 import 'package:event_planner_app/models/comment_modal.dart';
 import 'package:event_planner_app/utils/logging.dart';
+import 'package:event_planner_app/config/app_config.dart';
 
 class ApiService {
   // Base Url
-  final String baseUrl = 'https://jsonplaceholder.typicode.com';
-  final String baseImageUrl = 'https://picsum.photos/v2/list';
+  final String baseUrl = Config.baseUrl;
+  final String baseImageUrl = Config.baseImageUrl;
 
   // Update constructor to allow dependency injection
   final http.Client client;
   ApiService({http.Client? client}) : client = client ?? http.Client();
+
+  // Fetch event organizers
+  Future<List<Organizer>> fetchOrganizers() async {
+    try {
+      LogService.info("Fetching event organizers from $baseUrl/users...");
+      final response = await client.get(Uri.parse('$baseUrl/users'));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        LogService.debug(
+          "Successfully fetched ${data.length} event organizers.",
+        );
+        return data.map((item) => Organizer.fromJson(item)).toList();
+      } else {
+        LogService.warning(
+          "Failed to fetch event organizers. Status Code: ${response.statusCode}",
+        );
+        throw Exception('Failed to load event organizers');
+      }
+    } catch (error) {
+      LogService.error("Error fetching event organizers: ${error.toString()}");
+      throw Exception('Failed to load event organizers');
+    } finally {
+      client.close();
+    }
+  }
 
   //Fetch images
   Future<List<String>> fetchImages() async {
@@ -39,33 +67,8 @@ class ApiService {
     }
   }
 
-  // Fetch event organizers
-  Future<List<Map<String, dynamic>>> fetchOrganizers() async {
-    try {
-      LogService.info("Fetching event organizers from $baseUrl/users...");
-      final response = await client.get(Uri.parse('$baseUrl/users'));
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        LogService.debug(
-          "Successfully fetched ${data.length} event organizers.",
-        );
-        return List<Map<String, dynamic>>.from(data);
-      } else {
-        LogService.warning(
-          "Failed to fetch event organizers. Status Code: ${response.statusCode}",
-        );
-        throw Exception('Failed to load event organizers');
-      }
-    } catch (error) {
-      LogService.error("Error fetching event organizers: ${error.toString()}");
-      throw Exception('Failed to load event organizers');
-    } finally {
-      client.close();
-    }
-  }
-
   // Fetch the first 10 photos
-  Future<List<Map<String, dynamic>>> fetchPhotos() async {
+  Future<List<Photo>> fetchPhotos() async {
     try {
       LogService.info("Fetching first 10 photos from $baseImageUrl...");
       final response = await client.get(Uri.parse(baseImageUrl));
@@ -76,7 +79,7 @@ class ApiService {
         );
         return data
             .take(10)
-            .map((item) => item as Map<String, dynamic>)
+            .map((item) => Photo.fromJson(item as Map<String, dynamic>))
             .toList();
       } else {
         LogService.warning(
